@@ -244,15 +244,21 @@ def style_base_layout():
         }
 
 
-        /* Text inside white cards */
+            /* Text inside white cards */
 
-        .stApp div[data-testid="stColumn"] h1,
-        .stApp div[data-testid="stColumn"] h2,
-        .stApp div[data-testid="stColumn"] h3,
-        .stApp div[data-testid="stColumn"] h4,
-        .stApp div[data-testid="stColumn"] p {
-            color: #111827 !important;
-        }
+            .stApp div[data-testid="stColumn"] {
+                color: #111827 !important;
+            }
+
+            .stApp div[data-testid="stColumn"] h1,
+            .stApp div[data-testid="stColumn"] h2,
+            .stApp div[data-testid="stColumn"] h3,
+            .stApp div[data-testid="stColumn"] h4,
+            .stApp div[data-testid="stColumn"] p,
+            .stApp div[data-testid="stColumn"] span,
+            .stApp div[data-testid="stColumn"] label {
+                color: #111827 !important;
+            }
 
 
         </style>
