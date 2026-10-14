@@ -1,36 +1,21 @@
+"""
+SnapClass - Modern AI Attendance Management System
+Main entry point for starting the Flask server.
+"""
+import sys
+from pathlib import Path
 
-import streamlit as st
+# Ensure root directory is on Python path
+ROOT_DIR = Path(__file__).resolve().parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-from src.screens.home_screen import home_screen
-from src.screens.teacher_screen import teacher_screen
-from src.screens.student_screen import student_screen
+from backend.app import app
+from config.settings import FLASK_HOST, FLASK_PORT, FLASK_DEBUG
 
-from src.components.dialog_auto_enroll import auto_enroll_dialog
-
-def main():
-    st.set_page_config(
-        page_title='SnapClass - Making Attendance faster using AI',
-        page_icon= "https://i.ibb.co/YTYGn5qV/logo.png"
-    )
-    if 'login_type' not in st.session_state:
-        st.session_state['login_type'] = None
-
-    match st.session_state['login_type']:
-        case 'teacher':
-            teacher_screen()
-
-        case 'student':
-            student_screen()
-        
-        case None:
-            home_screen()
-
-
-    join_code = st.query_params.get('join-code')
-    if join_code:
-        if st.session_state.login_type != 'student':
-            st.session_state.login_type = 'student'
-            st.rerun()
-        if st.session_state.get('is_logged_in') and st.session_state.get('user_role') == 'student':
-            auto_enroll_dialog(join_code)
-main()
+if __name__ == "__main__":
+    print("=" * 60)
+    print("  SNAPCLASS ATTENDANCE SYSTEM - MODERN WEB APPLICATION")
+    print(f"  Access UI at: http://localhost:{FLASK_PORT}")
+    print("=" * 60)
+    app.run(host=FLASK_HOST, port=FLASK_PORT, debug=FLASK_DEBUG)

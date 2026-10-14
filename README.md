@@ -1,620 +1,147 @@
-
-
-````markdown
-# 📸 Snap Class Attendance System
+# 📸 SnapClass - AI-Powered Attendance Management System
 
 <p align="center">
-
-### 👨‍💻 Author: **Hamid Ansari**
-
-**AI/ML Developer | B.Tech CSE (AI)**
-
+  <img src="https://i.ibb.co/YTYGn5qV/logo.png" width="120" alt="SnapClass Logo" />
 </p>
 
 <p align="center">
-  <strong>Smart Attendance • Face Recognition • Voice Attendance • Subject Management</strong>
+  <strong>Modern HTML5 & CSS3 Frontend • Flask REST API • Face Recognition • Voice Analysis • Supabase</strong>
+</p>
+
+<p align="center">
+  Author: <b>Hamid Ansari</b> (AI/ML Developer | B.Tech CSE AI)
 </p>
 
 ---
 
 ## 🚀 Overview
 
-**Snap Class Attendance System** is a smart web-based attendance management application built using **Python and Streamlit**.
+**SnapClass Attendance System** is an enterprise-grade, AI-driven attendance management web platform. Originally prototyped in Streamlit, the system has been transformed into a production-ready **HTML5 + Vanilla CSS3 + JavaScript frontend** communicating via RESTful API routes with a high-performance **Python/Flask backend**.
 
-The system provides separate portals for **Students** and **Teachers** and simplifies classroom attendance using **Face Recognition** with an optional **Voice Attendance** system.
+The core AI pipelines (**dlib 128-d face recognition**, **Resemblyzer acoustic voice embeddings**) and **Supabase cloud PostgreSQL** database logic remain **100% intact and preserved**.
 
-Students can register using FaceID, enroll in subjects, join classes using a join code, and track their attendance.
+---
 
-Teachers can create and manage subjects, upload classroom photos, run AI-based face recognition attendance, use voice attendance, and view attendance records.
+## 📁 Clean Architecture & Folder Structure
 
-The application uses **Supabase** for storing users, subjects, enrollments, and attendance data.
+```text
+├── frontend/
+│   ├── index.html            # Semantic HTML5 single-page application
+│   ├── css/
+│   │   └── style.css         # Modern, responsive CSS (Flexbox/Grid, Glassmorphism, Animations)
+│   └── js/
+│       ├── app.js            # Frontend application controller, Camera/Audio streams, REST API calls
+│       └── charts.js         # Interactive Chart.js analytics visualizations
+│
+├── backend/
+│   ├── __init__.py           # Backend package exports
+│   ├── app.py                # Flask application, REST routes, static file server
+│   ├── db.py                 # Pure Supabase database logic, queries & auth (preserved)
+│   └── pipelines/
+│       ├── __init__.py
+│       ├── face_pipeline.py  # dlib face detection, landmark predictor, linear SVM & distance matching
+│       └── voice_pipeline.py # Resemblyzer d-vector embeddings, librosa silence splitting & cosine matching
+│
+├── config/
+│   ├── __init__.py
+│   └── settings.py           # Environment variables, Supabase credentials & server configs
+│
+├── img/
+│   └── logo.png              # SnapClass logo asset
+│
+├── app.py                    # Root entrypoint to run the Flask application
+├── requirements.txt          # Cleaned dependencies (Streamlit removed, Flask & dotenv added)
+├── .env                      # Supabase URL & Service Key
+└── README.md                 # Complete documentation
+```
 
 ---
 
 ## ✨ Features
 
 ### 👨‍🎓 Student Portal
-
-- 📸 FaceID-based student login
-- 🆕 New student registration
-- 👤 Face embedding generation
-- 🎙️ Optional voice enrollment
-- 📚 Enroll in subjects
-- 🔗 Join subjects using a join code
-- 📊 View attendance statistics
-- ❌ Unenroll from subjects
-- 🔐 Student session management
-
----
+- **FaceID Login**: Direct webcam access via HTML5 `getUserMedia`. Captures high-res face frames and authenticates via Euclidean distance matching against registered embeddings.
+- **Dynamic Profile Registration**: Automatic detection for new students with real-time feedback, name input, and immediate classifier retraining.
+- **Optional Voice Enrollment**: Live microphone capture using `MediaRecorder` API to enroll acoustic voiceprints for voice attendance.
+- **Enrolled Course Dashboard**: Displays total sessions held, attended count, attendance rate percentage, and unenroll options.
+- **Join by Code**: Manual subject code enrollment or **Instant Auto-Enrollment** via QR code / link (`/?join-code=<code>`).
 
 ### 👨‍🏫 Teacher Portal
-
-- 🔐 Teacher registration and login
-- 📚 Create and manage subjects
-- 📝 Take AI-based attendance
-- 📷 Upload classroom photos
-- 🤖 Face recognition based attendance
-- 🎙️ Voice attendance option
-- 👥 View enrolled students
-- 📊 View attendance records
-- 🔗 Share subject/join codes
-- 🗑️ Manage classroom attendance photos
-
----
-
-## 🤖 AI Attendance
-
-The system uses face recognition to identify registered students from classroom images.
-
-### Attendance Flow
-
-```text
-Classroom Photos
-       ↓
-Face Detection
-       ↓
-Face Embedding
-       ↓
-Face Recognition
-       ↓
-Identify Students
-       ↓
-Check Subject Enrollment
-       ↓
-Mark Attendance
-       ↓
-Save Attendance
-````
+- **Secure Authentication**: Teacher registration and bcrypt-hashed password authentication.
+- **Subject Management**: Create courses (Subject Code, Name, Section) and generate printable / shareable **QR Codes** using `segno`.
+- **Classroom AI Attendance (Face Scan)**:
+  - Add classroom photos via live camera snapshots or batch file uploads.
+  - Interactive photo gallery with individual removal and batch clearing.
+  - Deep face scanning across all uploaded photos with attendance review table before saving.
+- **Classroom Voice Attendance**:
+  - Live microphone recording of roll calls or audio file upload.
+  - Audio silence splitting (`top_db=30`) and cosine similarity speaker verification.
+- **Attendance Records & Interactive Chart.js Analytics**:
+  - Historical session logs table.
+  - **Bar Chart**: Attendance rate across all subjects.
+  - **Line Chart**: Attendance timeline trends over sessions.
+  - **Doughnut Chart**: Overall Present vs. Absent student distribution.
 
 ---
 
-## 🎙️ Voice Attendance
+## 🛠️ Technology Stack
 
-The system also provides an optional voice attendance workflow.
-
-Students can provide a voice sample during registration.
-
-The system can generate a voice embedding from the recorded audio and use it as an additional attendance method.
-
-### Voice Attendance Flow
-
-```text
-Voice Recording
-       ↓
-Audio Processing
-       ↓
-Voice Embedding
-       ↓
-Voice Matching
-       ↓
-Student Identification
-       ↓
-Mark Attendance
-```
+| Layer | Technologies |
+|---|---|
+| **Frontend** | HTML5, Modern Vanilla CSS3 (Flexbox/Grid), JavaScript (ES6+), Chart.js |
+| **Backend** | Python 3.11, Flask 3.1, RESTful JSON API |
+| **Database & Auth** | Supabase (Cloud PostgreSQL), bcrypt |
+| **Face Recognition** | dlib, `face_recognition_models` (ResNet-34 128D), Scikit-Learn (Linear SVC) |
+| **Voice Recognition** | Resemblyzer (GE2E d-vectors), librosa audio processing, PyTorch |
+| **QR Code Engine** | Segno QR code generator |
 
 ---
 
-## 📚 Subject Management
+## 🔌 API Route Reference
 
-Teachers can create and manage subjects with:
+### Authentication & Profiles
+- `POST /api/teacher/login`: Authenticates teacher credentials.
+- `POST /api/teacher/register`: Creates new teacher account.
+- `POST /api/student/login-face`: Receives base64/multipart face image, predicts student identity.
+- `POST /api/student/register`: Creates student record with face descriptor and optional voice embedding.
 
-* Subject Name
-* Subject Code
-* Section
-* Enrolled Students
+### Student Endpoints
+- `GET /api/student/<student_id>/subjects`: Fetches enrolled subjects with attendance statistics.
+- `POST /api/student/enroll`: Enrolls student in subject via subject code.
+- `POST /api/student/unenroll`: Unenrolls student from subject.
+- `GET /api/subject/info/<subject_code>`: Checks subject validity for auto-enroll link.
 
-Students can enroll in available subjects and view their attendance.
-
-Each subject displays:
-
-```text
-Total Classes
-Attended Classes
-```
-
-Students can also unenroll from a subject when required.
-
----
-
-## 🔗 Join Code Enrollment
-
-Teachers can share a unique join code for their subject.
-
-Students can use the join code to enroll in the corresponding class.
-
-Example:
-
-```text
-?join-code=YOUR_CODE
-```
-
-This makes classroom enrollment simple without manually adding every student.
+### Teacher Endpoints
+- `GET /api/teacher/<teacher_id>/subjects`: Lists teacher's courses with student counts.
+- `POST /api/teacher/subjects`: Creates new course.
+- `GET /api/subject/<subject_code>/qr`: Generates PNG QR code for join links.
+- `POST /api/attendance/face-scan`: Scans classroom photos and generates attendance preview.
+- `POST /api/attendance/voice-scan`: Scans audio recording and matches voiceprints.
+- `POST /api/attendance/confirm`: Commits verified attendance records to Supabase.
+- `GET /api/teacher/<teacher_id>/attendance-records`: Returns historical attendance logs.
+- `GET /api/teacher/<teacher_id>/analytics`: Aggregates metrics for Chart.js dashboards.
 
 ---
 
-## 👥 User Roles
+## 🚀 How to Run Locally
 
-The system has two main user roles:
-
-### 👨‍🎓 Student
-
-```text
-Register
-   ↓
-FaceID Login
-   ↓
-Student Dashboard
-   ↓
-Join / Enroll in Subjects
-   ↓
-View Attendance
-```
-
-### 👨‍🏫 Teacher
-
-```text
-Register / Login
-       ↓
-Teacher Dashboard
-       ↓
-Create Subject
-       ↓
-Add Students
-       ↓
-Take Attendance
-       ↓
-View Attendance Records
-```
-
----
-
-## 🏗️ Project Structure
-
-```text
-Snap-Class-Attendance-System/
-│
-├── app.py
-├── requirements.txt
-├── README.md
-├── .gitignore
-│
-├── .devcontainer/
-│
-├── .vscode/
-│
-└── src/
-    │
-    ├── components/
-    │   ├── header.py
-    │   ├── footer.py
-    │   ├── subject_card.py
-    │   ├── dialog_enroll.py
-    │   ├── dialog_create_subject.py
-    │   ├── dialog_share_subject.py
-    │   ├── dialog_add_photo.py
-    │   ├── dialog_attendance_results.py
-    │   ├── dialog_voice_attendance.py
-    │   └── dialog_auto_enroll.py
-    │
-    ├── screens/
-    │   ├── home_screen.py
-    │   ├── student_screen.py
-    │   └── teacher_screen.py
-    │
-    ├── database/
-    │   ├── db.py
-    │   └── config.py
-    │
-    ├── pipelines/
-    │   ├── face_pipeline.py
-    │   └── voice_pipeline.py
-    │
-    └── ui/
-        └── base_layout.py
-```
-
----
-
-## 🧠 System Architecture
-
-```text
-                    ┌─────────────────────┐
-                    │      Streamlit      │
-                    │    Web Interface    │
-                    └──────────┬──────────┘
-                               │
-                 ┌─────────────┴─────────────┐
-                 │                           │
-        ┌────────▼────────┐        ┌────────▼────────┐
-        │ Student Portal  │        │ Teacher Portal  │
-        └────────┬────────┘        └────────┬────────┘
-                 │                           │
-        ┌────────▼────────┐        ┌────────▼────────┐
-        │ Face Recognition│        │ Subject Manager │
-        │ Voice Attendance│        │ Attendance       │
-        └────────┬────────┘        └────────┬────────┘
-                 │                           │
-                 └─────────────┬─────────────┘
-                               │
-                      ┌────────▼────────┐
-                      │     Supabase    │
-                      │     Database    │
-                      └─────────────────┘
-```
-
----
-
-## 🛠️ Tech Stack
-
-| Technology                 | Purpose                   |
-| -------------------------- | ------------------------- |
-| 🐍 Python                  | Core programming language |
-| 🎈 Streamlit               | Web application           |
-| 🔢 NumPy                   | Numerical processing      |
-| 🐼 Pandas                  | Data processing           |
-| 🤖 Scikit-learn            | Machine learning          |
-| 🧠 dlib                    | Face processing           |
-| 👤 Face Recognition Models | Face recognition          |
-| 🗄️ Supabase               | Database and backend      |
-| 🔐 bcrypt                  | Password hashing          |
-| 🖼️ Pillow                 | Image processing          |
-| 🎵 Librosa                 | Audio processing          |
-| 🎙️ Resemblyzer            | Voice embeddings          |
-| 📱 Segno                   | QR code generation        |
-
----
-
-## ⚙️ Installation
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/hamid9889/Snap-Class-Attendance-System.git
-```
-
-### 2. Open the Project
-
-```bash
-cd Snap-Class-Attendance-System
-```
-
-### 3. Create Virtual Environment
-
-#### Windows
-
-```bash
-python -m venv .venv
-```
-
-Activate it:
-
-```bash
-.venv\Scripts\activate
-```
-
-### 4. Install Dependencies
-
+### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
----
-
-## 🔐 Environment Variables
-
-Create a `.env` file in the project root.
-
-Example:
-
+### 2. Configure Environment (`.env`)
+Ensure `.env` contains your Supabase credentials:
 ```env
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your-supabase-key"
 ```
 
-> Never upload real API keys, passwords, or private credentials to GitHub.
-
-Make sure `.env` is included in `.gitignore`.
-
----
-
-## 🗄️ Database
-
-The project uses **Supabase** as the backend database.
-
-The database is responsible for storing application data such as:
-
-* Students
-* Teachers
-* Subjects
-* Subject enrollments
-* Attendance records
-
-Database configuration:
-
-```text
-src/database/config.py
-```
-
-Database operations:
-
-```text
-src/database/db.py
-```
-
----
-
-## ▶️ Run the Application
-
-After activating the virtual environment:
-
+### 3. Launch the Server
 ```bash
-streamlit run app.py
+python app.py
 ```
-
-The application will normally run at:
-
-```text
-http://localhost:8501
+Open your browser and navigate to:
 ```
-
----
-
-## 🔄 Application Flow
-
-### Student Flow
-
-```text
-Home
-  ↓
-Student Portal
-  ↓
-FaceID Login
-  ↓
-Student Dashboard
-  ↓
-View Subjects
-  ↓
-View Attendance
-```
-
-### New Student Registration
-
-```text
-Student Portal
-      ↓
-FaceID Scan
-      ↓
-Face Not Recognized
-      ↓
-Student Registration
-      ↓
-Capture Face
-      ↓
-Optional Voice Enrollment
-      ↓
-Create Account
-      ↓
-Student Dashboard
-```
-
-### Teacher Flow
-
-```text
-Home
-  ↓
-Teacher Portal
-  ↓
-Teacher Login / Registration
-  ↓
-Teacher Dashboard
-  ↓
-Create / Manage Subject
-  ↓
-Take Attendance
-  ↓
-View Attendance Records
-```
-
----
-
-## 📸 Face Attendance Process
-
-```text
-Select Subject
-      ↓
-Upload Classroom Photos
-      ↓
-Run Face Analysis
-      ↓
-Detect Faces
-      ↓
-Generate Face Embeddings
-      ↓
-Compare With Registered Faces
-      ↓
-Identify Students
-      ↓
-Check Subject Enrollment
-      ↓
-Mark Attendance
-      ↓
-Save Attendance
-```
-
----
-
-## 📊 Attendance
-
-### Teacher
-
-Teachers can:
-
-* View attendance records
-* Check enrolled students
-* Take attendance
-* Review attendance results
-* Manage classroom attendance photos
-
-### Student
-
-Students can:
-
-* View enrolled subjects
-* Check total classes
-* Check attended classes
-* Track their attendance
-* Unenroll from subjects
-
----
-
-## 🎨 User Interface
-
-The application includes a custom Streamlit UI with:
-
-* 🌙 Dark themed background
-* ⚪ Clean white subject cards
-* 🎨 Custom buttons
-* 📚 Subject cards
-* 👨‍🎓 Student dashboard
-* 👨‍🏫 Teacher dashboard
-* 📊 Attendance information
-* 🔐 Login and registration screens
-
----
-
-## 🔒 Security
-
-The project includes:
-
-* 🔐 Password hashing using bcrypt
-* 🔑 Environment-based configuration
-* 🗄️ Supabase backend
-* 👤 Face-based authentication
-* 🔒 Session-based application state
-
-### Never commit:
-
-```text
-.env
-API Keys
-Supabase Secret Keys
-Private Credentials
-```
-
----
-
-## 🧪 Testing Checklist
-
-### Student
-
-* [ ] Student registration
-* [ ] FaceID login
-* [ ] Voice enrollment
-* [ ] Subject enrollment
-* [ ] Join code enrollment
-* [ ] Attendance statistics
-* [ ] Subject unenrollment
-* [ ] Logout
-
-### Teacher
-
-* [ ] Teacher registration
-* [ ] Teacher login
-* [ ] Create subject
-* [ ] Share subject code
-* [ ] Add classroom photos
-* [ ] Face attendance
-* [ ] Voice attendance
-* [ ] Attendance results
-* [ ] Attendance records
-* [ ] Logout
-
----
-
-## 🚀 Future Improvements
-
-* 📊 Advanced attendance analytics
-* 📈 Attendance percentage charts
-* 📅 Attendance calendar
-* 📤 Export attendance reports
-* 📧 Attendance notifications
-* 🔔 Low-attendance alerts
-* 👨‍💼 Admin dashboard
-* 📱 Better mobile support
-* ⚡ Performance optimization
-* ☁️ Improved production deployment
-
----
-
-## 📌 Project Information
-
-| Category              | Details                      |
-| --------------------- | ---------------------------- |
-| Project               | Snap Class Attendance System |
-| Language              | Python                       |
-| Framework             | Streamlit                    |
-| Database              | Supabase                     |
-| Primary Attendance    | Face Recognition             |
-| Additional Attendance | Voice Recognition            |
-| User Roles            | Student & Teacher            |
-
----
-
-## 👨‍💻 Author
-
-**Hamid Ansari**
-
-B.Tech CSE (AI)
-AI/ML Developer
-
-### GitHub
-
-[https://github.com/hamid9889](https://github.com/hamid9889)
-
----
-
-## ⭐ Support
-
-If you find this project useful:
-
-⭐ Star the repository
-🍴 Fork the repository
-🐛 Report bugs
-💡 Suggest improvements
-
----
-
-## 📄 License
-
-This project is developed for educational and development purposes.
-
----
-
-<p align="center">
-
-### 🚀 Built with Python, Streamlit, AI & Supabase
-
-**Built by Hamid Ansari**
-
-</p>
+http://localhost:5000
 ```

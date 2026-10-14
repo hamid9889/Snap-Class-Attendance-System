@@ -1,24 +1,24 @@
-streamlit
-# Utilitites 
-numpy
-pandas
+# Web Framework & Environment
+Flask>=3.0.0
+python-dotenv>=1.0.0
 
-# FACE RECOGNITION
-scikit-learn
+# Database & Security
+supabase>=2.0.0
+bcrypt>=4.0.0
+
+# Data Processing & Utilities
+numpy>=1.22.0
+pandas>=2.0.0
+pillow>=10.0.0
+segno>=1.6.0
+
+# Face Recognition Pipeline
+scikit-learn>=1.2.0
 dlib-bin
 git+https://github.com/ageitgey/face_recognition_models
 setuptools<70.0.0
 
-
-supabase
-bcrypt
-
-
-
-segno
-pillow
-
-
-
-librosa
-resemblyzer
+# Voice Recognition Pipeline
+webrtcvad-wheels; sys_platform == 'win32'
+librosa>=0.10.0
+resemblyzer>=0.1.4
