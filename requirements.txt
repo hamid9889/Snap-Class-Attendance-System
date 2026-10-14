@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Web Server and Core Framework
 flask>=3.0.0
 python-dotenv>=1.0.0
@@ -8,15 +9,39 @@ bcrypt>=4.0.0
 
 # Utilities & QR Code
 numpy
+=======
+# Web Framework & Environment
+Flask>=3.0.0
+python-dotenv>=1.0.0
+
+# Database & Security
+supabase>=2.0.0
+bcrypt>=4.0.0
+
+# Data Processing & Utilities
+numpy>=1.22.0
+pandas>=2.0.0
+>>>>>>> fcebf06017d3db8510430498d51002843af0f415
 pillow>=10.0.0
 segno>=1.6.0
 
 # Face Recognition Pipeline
+<<<<<<< HEAD
 scikit-learn
+=======
+scikit-learn>=1.2.0
+>>>>>>> fcebf06017d3db8510430498d51002843af0f415
 dlib-bin
 git+https://github.com/ageitgey/face_recognition_models
 setuptools<70.0.0
 
+<<<<<<< HEAD
 # Voice Analysis Pipeline
 librosa
 resemblyzer
+=======
+# Voice Recognition Pipeline
+webrtcvad-wheels; sys_platform == 'win32'
+librosa>=0.10.0
+resemblyzer>=0.1.4
+>>>>>>> fcebf06017d3db8510430498d51002843af0f415

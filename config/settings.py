@@ -7,6 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
+<<<<<<< HEAD
 # Locate directories and load environment variables from config/.env or root .env
 ROOT_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = ROOT_DIR / "config"
@@ -17,6 +18,14 @@ if ENV_PATH_CONFIG.exists():
     load_dotenv(dotenv_path=ENV_PATH_CONFIG)
 elif ENV_PATH_ROOT.exists():
     load_dotenv(dotenv_path=ENV_PATH_ROOT)
+=======
+# Locate root directory and load environment variables from .env
+ROOT_DIR = Path(__file__).resolve().parent.parent
+ENV_PATH = ROOT_DIR / ".env"
+
+if ENV_PATH.exists():
+    load_dotenv(dotenv_path=ENV_PATH)
+>>>>>>> fcebf06017d3db8510430498d51002843af0f415
 else:
     load_dotenv()
 
