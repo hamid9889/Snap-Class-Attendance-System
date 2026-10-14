@@ -1,24 +1,22 @@
-streamlit
-# Utilitites 
-numpy
-pandas
+# Web Server and Core Framework
+flask>=3.0.0
+python-dotenv>=1.0.0
 
-# FACE RECOGNITION
+# Database & Authentication
+supabase>=2.0.0
+bcrypt>=4.0.0
+
+# Utilities & QR Code
+numpy
+pillow>=10.0.0
+segno>=1.6.0
+
+# Face Recognition Pipeline
 scikit-learn
 dlib-bin
 git+https://github.com/ageitgey/face_recognition_models
 setuptools<70.0.0
 
-
-supabase
-bcrypt
-
-
-
-segno
-pillow
-
-
-
+# Voice Analysis Pipeline
 librosa
 resemblyzer

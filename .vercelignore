@@ -1,0 +1,40 @@
+# Python Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python Bytecode and Caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Version Control and IDE
+.git/
+.gitignore
+.vscode/
+.devcontainer/
+.idea/
+
+# Legacy Streamlit UI and configurations (Replaced by modern frontend)
+.streamlit/
+src/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Development and tests
+tests/
+test/
+*.test.py
+*.spec.py
+
+# OS metadata
+.DS_Store
+Thumbs.db

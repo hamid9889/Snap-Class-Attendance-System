@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SnapClass - Making Attendance Faster Using AI</title>
+  <meta name="description" content="AI-powered smart classroom attendance management with face recognition, voice analysis, and Supabase integration." />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://i.ibb.co/YTYGn5qV/logo.png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <!-- Chart.js for Interactive Attendance Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- Top Brand Header -->
+    <header class="brand-header">
+      <div class="brand-identity" onclick="showView('home')">
+        <img src="https://i.ibb.co/YTYGn5qV/logo.png" alt="SnapClass Logo" class="brand-logo" />
+        <div class="brand-text">
+          <h1>SNAPCLASS</h1>
+          <span>Smart Attendance with AI</span>
+        </div>
+      </div>
+
+      <!-- Authenticated User Profile Badge -->
+      <div id="headerUserBadge" class="user-badge-container" style="display: none;">
+        <div class="user-badge">
+          <span id="headerUserName">Hamid</span>
+          <span id="headerUserRole" class="role-tag">Teacher</span>
+        </div>
+        <button class="btn btn-tertiary btn-sm" onclick="handleLogout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- ====================================================================== -->
+    <!-- VIEW 1: HOME SCREEN (Portal Selection)                                 -->
+    <!-- ====================================================================== -->
+    <main id="viewHome">
+      <div class="portal-selection-grid">
+        
+        <!-- Student Portal Card -->
+        <div class="portal-card">
+          <img src="https://i.ibb.co/844D9Lrt/mascot-student.png" alt="Student Mascot" class="portal-mascot" />
+          <h2>I'm a Student</h2>
+          <p>Login securely with FaceID, track your attendance records across subjects, and enroll in new courses.</p>
+          <button class="btn btn-primary btn-block" onclick="showView('student_login')">
+            Student Portal ➔
+          </button>
+        </div>
+
+        <!-- Teacher Portal Card -->
+        <div class="portal-card">
+          <img src="https://i.ibb.co/CsmQQV6X/mascot-prof.png" alt="Teacher Mascot" class="portal-mascot" />
+          <h2>I'm a Teacher</h2>
+          <p>Create subjects, upload classroom photos for deep AI facial recognition, run voice attendance, and view charts.</p>
+          <button class="btn btn-secondary btn-block" onclick="showView('teacher_auth')">
+            Teacher Portal ➔
+          </button>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ====================================================================== -->
+    <!-- VIEW 2: STUDENT FACEID LOGIN & REGISTRATION                            -->
+    <!-- ====================================================================== -->
+    <section id="viewStudentLogin" style="display: none;">
+      <div style="margin-bottom: 1.5rem;">
+        <button class="btn btn-tertiary btn-sm" onclick="showView('home')">← Back to Home</button>
+      </div>
+
+      <div class="auth-container">
+        <div class="auth-header">
+          <h2>Student FaceID Login</h2>
+          <p>Center your face inside the viewfinder to authenticate.</p>
+        </div>
+
+        <!-- Camera Viewfinder -->
+        <div class="camera-viewfinder">
+          <video id="studentCameraVideo" autoplay playsinline muted></video>
+          <div class="viewfinder-overlay"></div>
+        </div>
+
+        <div class="camera-controls">
+          <button id="btnStudentScanFace" class="btn btn-primary btn-block" onclick="handleStudentFaceLogin()">
+            📸 Scan My Face
+          </button>
+        </div>
+
+        <!-- Registration Container (Shown dynamically if face is not recognized) -->
+        <div id="studentRegisterContainer" style="display: none; margin-top: 2rem; padding-top: 1.5rem; border-top: 1.5px dashed var(--border-subtle);">
+          <div class="auth-header">
+            <h3>Register New Student Profile</h3>
+            <p>Your face was scanned. Complete your details below to register.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="studentRegName">Full Name</label>
+            <input type="text" id="studentRegName" class="form-control" placeholder="e.g. Hamid Ansari" required />
+          </div>
+
+          <div style="margin: 1.5rem 0;">
+            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Optional: Voice Profile Enrollment</label>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+              Record a short voice phrase (e.g. <i>"I am present, my name is..."</i>) to enable voice-based attendance.
+            </p>
+            <div class="audio-recorder-box">
+              <button type="button" id="btnRecStudentVoice" class="record-btn-indicator" title="Click to start/stop recording">🎙️</button>
+              <div id="studentVoiceTimer" class="record-timer">00:00</div>
+            </div>
+          </div>
+
+          <button type="button" id="btnStudentCreateAccount" class="btn btn-accent btn-block" onclick="handleStudentRegister()">
+            Complete Registration
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================== -->
+    <!-- VIEW 3: STUDENT DASHBOARD                                              -->
+    <!-- ====================================================================== -->
+    <section id="viewStudentDashboard" style="display: none;">
+      <div class="dashboard-container">
+        
+        <div class="dashboard-topbar">
+          <div class="dashboard-title">
+            <h2>Welcome, <span id="studentWelcomeName">Student</span> 👋</h2>
+            <p>Here is your attendance summary and enrolled course roster.</p>
+          </div>
+          <div>
+            <button class="btn btn-primary" onclick="openModal('modalEnrollSubject')">
+              ➕ Enroll in Subject
+            </button>
+          </div>
+        </div>
+
+        <!-- Metrics Overview -->
+        <div id="studentMetricsRow" class="metrics-row"></div>
+
+        <!-- Enrolled Subjects Grid -->
+        <h3 style="font-family: var(--font-brand); margin-bottom: 1rem; color: var(--text-main);">
+          Your Enrolled Subjects
+        </h3>
+        <div id="studentSubjectsGrid" class="subjects-grid">
+          <!-- Populated dynamically via app.js -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================== -->
+    <!-- VIEW 4: TEACHER AUTHENTICATION (Login & Register Tabs)                 -->
+    <!-- ====================================================================== -->
+    <section id="viewTeacherAuth" style="display: none;">
+      <div style="margin-bottom: 1.5rem;">
+        <button class="btn btn-tertiary btn-sm" onclick="showView('home')">← Back to Home</button>
+      </div>
+
+      <div class="auth-container">
+        
+        <div class="nav-tabs" style="margin-bottom: 1.5rem;">
+          <button type="button" id="tabTeacherLogin" class="nav-tab-btn active" onclick="switchTeacherAuthTab('login')">
+            Teacher Login
+          </button>
+          <button type="button" id="tabTeacherRegister" class="nav-tab-btn" onclick="switchTeacherAuthTab('register')">
+            Create Account
+          </button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="formTeacherLogin">
+          <div class="form-group">
+            <label for="teacherLoginUsername">Username</label>
+            <input type="text" id="teacherLoginUsername" class="form-control" placeholder="Enter your username" required />
+          </div>
+          <div class="form-group">
+            <label for="teacherLoginPassword">Password</label>
+            <input type="password" id="teacherLoginPassword" class="form-control" placeholder="••••••••" required />
+          </div>
+          <button type="submit" id="btnTeacherLoginSubmit" class="btn btn-primary btn-block">
+            Login to Dashboard
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="formTeacherRegister" style="display: none;">
+          <div class="form-group">
+            <label for="teacherRegUsername">Username</label>
+            <input type="text" id="teacherRegUsername" class="form-control" placeholder="Choose a username" required />
+          </div>
+          <div class="form-group">
+            <label for="teacherRegName">Full Name</label>
+            <input type="text" id="teacherRegName" class="form-control" placeholder="e.g. Prof. Hamid Ansari" required />
+          </div>
+          <div class="form-group">
+            <label for="teacherRegPassword">Password</label>
+            <input type="password" id="teacherRegPassword" class="form-control" placeholder="Create password" required />
+          </div>
+          <div class="form-group">
+            <label for="teacherRegConfirm">Confirm Password</label>
+            <input type="password" id="teacherRegConfirm" class="form-control" placeholder="Repeat password" required />
+          </div>
+          <button type="submit" id="btnTeacherRegisterSubmit" class="btn btn-secondary btn-block">
+            Register Account
+          </button>
+        </form>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================== -->
+    <!-- VIEW 5: TEACHER DASHBOARD                                              -->
+    <!-- ====================================================================== -->
+    <section id="viewTeacherDashboard" style="display: none;">
+      <div class="dashboard-container">
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+          <button type="button" id="tabBtn_take_attendance" class="nav-tab-btn active" onclick="switchTeacherTab('take_attendance')">
+            📸 Take AI Attendance
+          </button>
+          <button type="button" id="tabBtn_manage_subjects" class="nav-tab-btn" onclick="switchTeacherTab('manage_subjects')">
+            📚 Manage Subjects
+          </button>
+          <button type="button" id="tabBtn_attendance_records" class="nav-tab-btn" onclick="switchTeacherTab('attendance_records')">
+            📊 Attendance Records & Analytics
+          </button>
+        </nav>
+
+        <!-- ------------------------------------------------------------------ -->
+        <!-- TAB PANE 1: TAKE ATTENDANCE                                        -->
+        <!-- ------------------------------------------------------------------ -->
+        <div id="teacherPaneTakeAttendance">
+          <div class="scanner-setup-box">
+            <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 240px;">
+                <label for="selectAttendanceSubject" style="font-weight: 600; display: block; margin-bottom: 6px;">Select Subject</label>
+                <select id="selectAttendanceSubject" class="form-control">
+                  <option value="">Loading subjects...</option>
+                </select>
+              </div>
+              <div>
+                <button type="button" class="btn btn-primary" onclick="openAddPhotosModal()">
+                  ➕ Add Photos
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="font-family: var(--font-brand); color: var(--text-main); margin-bottom: 1rem;">
+            Added Classroom Photos
+          </h3>
+
+          <!-- Gallery of Classroom Photos -->
+          <div id="attendancePhotosGallery" class="photos-gallery-grid"></div>
+
+          <!-- Analysis Action Buttons -->
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 2rem;">
+            <button type="button" id="btnClearAttendancePhotos" class="btn btn-tertiary" onclick="clearAllAttendancePhotos()" disabled>
+              🗑️ Clear Photos
+            </button>
+            <button type="button" id="btnRunFaceScan" class="btn btn-secondary" onclick="handleRunFaceAnalysis()" disabled>
+              🔍 Run Face Analysis
+            </button>
+            <button type="button" class="btn btn-accent" onclick="openVoiceAttendanceModal()">
+              🎙️ Use Voice Attendance
+            </button>
+          </div>
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <!-- TAB PANE 2: MANAGE SUBJECTS                                        -->
+        <!-- ------------------------------------------------------------------ -->
+        <div id="teacherPaneManageSubjects" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h3 style="font-family: var(--font-brand); color: var(--text-main);">Course Roster</h3>
+            <button type="button" class="btn btn-primary" onclick="openModal('modalCreateSubject')">
+              ➕ Create New Subject
+            </button>
+          </div>
+
+          <div id="teacherSubjectsGrid" class="subjects-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <!-- TAB PANE 3: ATTENDANCE RECORDS & CHART.JS ANALYTICS                -->
+        <!-- ------------------------------------------------------------------ -->
+        <div id="teacherPaneRecords" style="display: none;">
+          
+          <!-- Key Metrics Summary Row -->
+          <div class="metrics-row">
+            <div class="metric-card">
+              <div id="teacherTotalStudentsMetric" class="metric-value">0</div>
+              <div class="metric-label">Enrolled Students</div>
+            </div>
+            <div class="metric-card">
+              <div id="teacherTotalSubjectsMetric" class="metric-value">0</div>
+              <div class="metric-label">Active Subjects</div>
+            </div>
+            <div class="metric-card">
+              <div id="teacherAverageAttendanceMetric" class="metric-value" style="color: var(--success);">0%</div>
+              <div class="metric-label">Average Attendance Rate</div>
+            </div>
+          </div>
+
+          <!-- Chart.js Visualization Grid -->
+          <div class="analytics-grid">
+            
+            <div class="chart-card">
+              <h4>📊 Attendance Rate by Subject</h4>
+              <div class="chart-canvas-wrapper">
+                <canvas id="chartSubjectAttendance"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h4>📈 Attendance Trend Over Sessions</h4>
+              <div class="chart-canvas-wrapper">
+                <canvas id="chartAttendanceTrend"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h4>🍩 Overall Present vs Absent Ratio</h4>
+              <div class="chart-canvas-wrapper">
+                <canvas id="chartAttendanceRatio"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Historical Sessions Table -->
+          <h3 style="font-family: var(--font-brand); margin-top: 2rem; margin-bottom: 1rem; color: var(--text-main);">
+            Historical Attendance Sessions
+          </h3>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Time & Date</th>
+                  <th>Subject</th>
+                  <th>Code</th>
+                  <th>Attendance Count</th>
+                </tr>
+              </thead>
+              <tbody id="tableTeacherRecordsBody">
+                <tr>
+                  <td colspan="4" style="text-align: center; color: var(--text-muted);">Loading session records...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <span>Created by Hamid Ansari</span>
+      <img src="https://i.ibb.co/YTYGn5qV/logo.png" alt="SnapClass Logo" />
+    </footer>
+
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODALS & DIALOGS                                                       -->
+  <!-- ====================================================================== -->
+
+  <!-- 1. Modal: Add Photos (Camera / Upload) -->
+  <div id="modalAddPhotos" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Capture or Upload Classroom Photos</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalAddPhotos')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="nav-tabs" style="margin-bottom: 1.5rem;">
+          <button type="button" id="btnPhotoSourceCamera" class="btn btn-primary" style="flex: 1;" onclick="switchAddPhotoSource('camera')">
+            📷 Camera Viewfinder
+          </button>
+          <button type="button" id="btnPhotoSourceUpload" class="btn btn-tertiary" style="flex: 1;" onclick="switchAddPhotoSource('upload')">
+            📁 Upload Files
+          </button>
+        </div>
+
+        <!-- Camera Section -->
+        <div id="panePhotoSourceCamera">
+          <div class="camera-viewfinder">
+            <video id="teacherCameraVideo" autoplay playsinline muted></video>
+          </div>
+          <button type="button" class="btn btn-primary btn-block" onclick="handleSnapClassroomPhoto()">
+            Capture Classroom Photo
+          </button>
+        </div>
+
+        <!-- Upload Section -->
+        <div id="panePhotoSourceUpload" style="display: none;">
+          <div class="form-group">
+            <label>Select image files from device (JPG, PNG)</label>
+            <input type="file" id="fileUploadClassPhotos" class="form-control" accept="image/*" multiple onchange="handleUploadClassroomPhotos(event)" />
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            You can select multiple photos at once. Wide angle or panoramic shots covering the classroom are recommended.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeModal('modalAddPhotos')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Modal: Voice Attendance -->
+  <div id="modalVoiceAttendance" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Classroom Voice Attendance</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalVoiceAttendance')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+          Record audio of students saying <i>"I am present"</i> in the classroom. AI will match acoustic voiceprints with registered profiles.
+        </p>
+
+        <div class="audio-recorder-box">
+          <button type="button" id="btnRecTeacherVoice" class="record-btn-indicator" title="Click to start/stop recording">🎙️</button>
+          <div id="voiceRecordTimer" class="record-timer">00:00</div>
+        </div>
+
+        <div class="form-group" style="margin-top: 1.5rem;">
+          <label>Or Upload Recorded Audio File (WAV, MP3)</label>
+          <input type="file" id="fileVoiceAttendance" class="form-control" accept="audio/*" onchange="state.recordedAudioBlob = this.files[0];" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-tertiary" onclick="closeModal('modalVoiceAttendance')">Cancel</button>
+        <button type="button" id="btnRunVoiceScan" class="btn btn-accent" onclick="handleRunVoiceAnalysis()">Analyze Audio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal: Attendance Results Preview & Confirmation -->
+  <div id="modalAttendanceResults" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 750px;">
+      <div class="modal-header">
+        <h3>Attendance Scan Review</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalAttendanceResults')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">
+          Please review the AI detection results below before confirming attendance to Supabase.
+        </p>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Student ID</th>
+                <th>Match Source</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tableAttendancePreviewBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-tertiary" onclick="closeModal('modalAttendanceResults')">Discard</button>
+        <button type="button" id="btnConfirmAttendanceLogs" class="btn btn-primary" onclick="handleConfirmAttendance()">Confirm & Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Modal: Enroll in Subject (Student) -->
+  <div id="modalEnrollSubject" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Enroll in Subject</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalEnrollSubject')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">
+          Enter the subject code provided by your teacher (e.g. CS101).
+        </p>
+        <div class="form-group">
+          <label for="inputEnrollSubjectCode">Subject Code</label>
+          <input type="text" id="inputEnrollSubjectCode" class="form-control" placeholder="e.g. CS101" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-tertiary" onclick="closeModal('modalEnrollSubject')">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="handleEnrollSubject()">Enroll Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Modal: Quick Auto-Enroll (URL Join Code) -->
+  <div id="modalQuickEnroll" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Class Invitation</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalQuickEnroll')">✕</button>
+      </div>
+      <div class="modal-body text-center">
+        <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+          Would you like to enroll in <b id="quickEnrollSubjectName" style="color: var(--primary);">Subject</b> (<span id="quickEnrollSubjectCode">CODE</span>)?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-tertiary" onclick="closeModal('modalQuickEnroll')">No thanks</button>
+        <button type="button" id="btnConfirmQuickEnroll" class="btn btn-primary">Yes, Enroll Now!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Modal: Create New Subject (Teacher) -->
+  <div id="modalCreateSubject" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create New Subject</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalCreateSubject')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="inputNewSubCode">Subject Code</label>
+          <input type="text" id="inputNewSubCode" class="form-control" placeholder="e.g. CS101" required />
+        </div>
+        <div class="form-group">
+          <label for="inputNewSubName">Subject Name</label>
+          <input type="text" id="inputNewSubName" class="form-control" placeholder="e.g. Intro to Computer Science" required />
+        </div>
+        <div class="form-group">
+          <label for="inputNewSubSection">Section / Class</label>
+          <input type="text" id="inputNewSubSection" class="form-control" placeholder="e.g. A" required />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-tertiary" onclick="closeModal('modalCreateSubject')">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="handleCreateSubject()">Create Subject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Modal: Share Subject & QR Code (Teacher) -->
+  <div id="modalShareSubject" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Share Class Code: <span id="shareSubTitle"></span></h3>
+        <button class="modal-close-btn" onclick="closeModal('modalShareSubject')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center;">
+          <div>
+            <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">Direct Joining Link</label>
+            <div id="shareSubLink" style="font-family: monospace; background: #F1F5F9; padding: 10px; border-radius: 8px; font-size: 0.85rem; word-break: break-all; margin: 6px 0 12px 0;"></div>
+            <button class="btn btn-tertiary btn-sm btn-block" onclick="copyShareLink()">📋 Copy Link</button>
+
+            <div style="margin-top: 1.5rem;">
+              <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">Subject Join Code</label>
+              <div id="shareSubCode" style="font-family: monospace; background: var(--primary-light); color: var(--primary); font-weight: bold; font-size: 1.25rem; padding: 8px; border-radius: 8px; text-align: center; margin: 6px 0 12px 0;"></div>
+              <button class="btn btn-tertiary btn-sm btn-block" onclick="copyShareCode()">📋 Copy Code</button>
+            </div>
+          </div>
+          <div style="text-align: center;">
+            <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 8px;">Scan with Camera to Join</label>
+            <img id="shareQrImage" src="" alt="Subject QR Code" style="max-width: 180px; width: 100%; border-radius: 12px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeModal('modalShareSubject')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="/js/charts.js"></script>
+  <script src="/js/app.js"></script>
+
+</body>
+</html>
