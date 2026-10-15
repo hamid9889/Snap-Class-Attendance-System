@@ -3,14 +3,15 @@ Flask>=3.0.0
 gunicorn>=21.2.0
 python-dotenv>=1.0.0
 
-# Database & Security
+# Database & Authentication Security
 supabase>=2.0.0
 bcrypt>=4.0.0
 
-# Utilities & QR Code Generation
+# Image, QR Code & Data Processing
 numpy>=1.22.0
 pillow>=10.0.0
 segno>=1.6.0
+opencv-python-headless>=4.8.0
 
 # Face Recognition Pipeline
 scikit-learn>=1.2.0
@@ -19,6 +20,8 @@ dlib; sys_platform != 'win32'
 git+https://github.com/ageitgey/face_recognition_models
 setuptools<70.0.0
 
-# Voice Recognition Pipeline (Librosa MFCC)
+# Voice Recognition & Audio Processing
 librosa>=0.10.0
 soundfile>=0.12.0
+SpeechRecognition>=3.10.0
+pydub>=0.25.1

@@ -128,42 +128,30 @@ def index():
 @app.route("/style.css")
 def serve_root_style():
     """Serves the main stylesheet directly from frontend/."""
-    if (FRONTEND_DIR / "style.css").exists():
-        return send_from_directory(str(FRONTEND_DIR), "style.css", mimetype="text/css")
-    return send_from_directory(str(FRONTEND_DIR / "css"), "style.css", mimetype="text/css")
+    return send_from_directory(str(FRONTEND_DIR), "style.css", mimetype="text/css")
 
 
 @app.route("/app.js")
 def serve_root_app_js():
     """Serves the main frontend controller script from frontend/."""
-    if (FRONTEND_DIR / "app.js").exists():
-        return send_from_directory(str(FRONTEND_DIR), "app.js", mimetype="application/javascript")
-    return send_from_directory(str(FRONTEND_DIR / "js"), "app.js", mimetype="application/javascript")
+    return send_from_directory(str(FRONTEND_DIR), "app.js", mimetype="application/javascript")
 
 
 @app.route("/charts.js")
 def serve_root_charts_js():
     """Serves the frontend charts logic script from frontend/."""
-    if (FRONTEND_DIR / "charts.js").exists():
-        return send_from_directory(str(FRONTEND_DIR), "charts.js", mimetype="application/javascript")
-    return send_from_directory(str(FRONTEND_DIR / "js"), "charts.js", mimetype="application/javascript")
+    return send_from_directory(str(FRONTEND_DIR), "charts.js", mimetype="application/javascript")
 
 
 @app.route("/css/<path:filename>")
 def serve_css(filename):
-    """Serves CSS stylesheets from frontend/css or frontend/."""
-    css_dir = FRONTEND_DIR / "css"
-    if (css_dir / filename).exists():
-        return send_from_directory(str(css_dir), filename, mimetype="text/css")
+    """Fallback route for any legacy css requests."""
     return send_from_directory(str(FRONTEND_DIR), filename, mimetype="text/css")
 
 
 @app.route("/js/<path:filename>")
 def serve_js(filename):
-    """Serves JavaScript files from frontend/js or frontend/."""
-    js_dir = FRONTEND_DIR / "js"
-    if (js_dir / filename).exists():
-        return send_from_directory(str(js_dir), filename, mimetype="application/javascript")
+    """Fallback route for any legacy js requests."""
     return send_from_directory(str(FRONTEND_DIR), filename, mimetype="application/javascript")
 
 

@@ -24,14 +24,6 @@
       "dest": "/frontend/charts.js"
     },
     {
-      "src": "/css/(.*)",
-      "dest": "/frontend/css/$1"
-    },
-    {
-      "src": "/js/(.*)",
-      "dest": "/frontend/js/$1"
-    },
-    {
       "src": "/img/(.*)",
       "dest": "/img/$1"
     },
