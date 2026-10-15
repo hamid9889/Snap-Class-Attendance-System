@@ -12,6 +12,18 @@
   ],
   "routes": [
     {
+      "src": "/style.css",
+      "dest": "/frontend/style.css"
+    },
+    {
+      "src": "/app.js",
+      "dest": "/frontend/app.js"
+    },
+    {
+      "src": "/charts.js",
+      "dest": "/frontend/charts.js"
+    },
+    {
       "src": "/css/(.*)",
       "dest": "/frontend/css/$1"
     },

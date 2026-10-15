@@ -1,0 +1,52 @@
+# Python Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python Bytecode and Caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node & Package Managers
+node_modules/
+
+# Local Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Compressed Archives & Data Files
+*.zip
+*.tar.gz
+*.csv
+
+# Media & Recordings
+*.mp4
+*.mp3
+*.avi
+*.wav
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# Version Control & IDE Configurations
+.git/
+.gitignore
+.vscode/
+.devcontainer/
+.idea/
+
+# Legacy code & tests
+.streamlit/
+src/
+tests/
+test/
+*.test.py
+*.spec.py

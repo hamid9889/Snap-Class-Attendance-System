@@ -1,23 +1,24 @@
-# Web Framework & Environment
+# Web Framework & Production WSGI Server
 Flask>=3.0.0
+gunicorn>=21.2.0
 python-dotenv>=1.0.0
 
 # Database & Security
 supabase>=2.0.0
 bcrypt>=4.0.0
 
-# Utilities & QR Code
+# Utilities & QR Code Generation
 numpy>=1.22.0
 pillow>=10.0.0
 segno>=1.6.0
 
 # Face Recognition Pipeline
 scikit-learn>=1.2.0
-dlib-bin
+dlib-bin; sys_platform == 'win32'
+dlib; sys_platform != 'win32'
 git+https://github.com/ageitgey/face_recognition_models
 setuptools<70.0.0
 
-# Voice Recognition Pipeline
-webrtcvad-wheels; sys_platform == 'win32'
+# Voice Recognition Pipeline (Librosa MFCC)
 librosa>=0.10.0
-resemblyzer>=0.1.4
+soundfile>=0.12.0

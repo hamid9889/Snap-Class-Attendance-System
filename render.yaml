@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: snapclass-attendance
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend.main:app
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_DEBUG
+        value: "False"

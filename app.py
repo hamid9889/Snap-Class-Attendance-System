@@ -10,7 +10,7 @@ ROOT_DIR = Path(__file__).resolve().parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from backend.app import app
+from backend.main import app
 from config.settings import FLASK_HOST, FLASK_PORT, FLASK_DEBUG
 
 if __name__ == "__main__":

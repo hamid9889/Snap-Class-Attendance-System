@@ -13,28 +13,40 @@ __pycache__/
 .coverage
 htmlcov/
 
-# Version Control and IDE
+# Node & Package Managers
+node_modules/
+
+# Local Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Compressed Archives & Data Files
+*.zip
+*.tar.gz
+*.csv
+
+# Media & Recordings
+*.mp4
+*.mp3
+*.avi
+*.wav
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# Version Control & IDE Configurations
 .git/
 .gitignore
 .vscode/
 .devcontainer/
 .idea/
 
-# Legacy Streamlit UI and configurations (Replaced by modern frontend)
+# Legacy code & tests
 .streamlit/
 src/
-
-# Local databases
-*.db
-*.sqlite
-*.sqlite3
-
-# Development and tests
 tests/
 test/
 *.test.py
 *.spec.py
-
-# OS metadata
-.DS_Store
-Thumbs.db
